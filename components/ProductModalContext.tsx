@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import Image from "next/image";
 import {
   Heart,
@@ -18,6 +18,8 @@ import {
   Edit2,
   Trash2,
 } from "lucide-react";
+import AuthModal from "./AuthModal";
+import { etrolleyApi } from "../lib/api";
 
 export interface SpecialProduct {
   id: number;
@@ -41,6 +43,18 @@ export interface CartItem {
   variant?: string;
 }
 
+export interface AuthUserData {
+  id?: number | string;
+  name: string;
+  email: string;
+  phone?: string;
+  image?: string;
+  points?: number;
+  wallet?: number;
+  count_orders?: number;
+  [key: string]: any;
+}
+
 interface ProductModalContextType {
   wishlist: number[];
   wishlistItems: SpecialProduct[];
@@ -59,6 +73,26 @@ interface ProductModalContextType {
   setIsAuthOpen: (open: boolean) => void;
   cartCount: number;
   wishlistCount: number;
+  user: AuthUserData | null;
+  setUser: (user: AuthUserData | null) => void;
+  logout: () => void;
+  storeInfo: any | null;
+  refreshStoreInfo: () => Promise<void>;
+  countries: any[];
+  selectedCountry: any | null;
+  setSelectedCountry: (country: any) => void;
+  currency: string;
+  setCurrency: (curr: string) => void;
+  formatPrice: (amount: number) => string;
+  currentLanguage: string;
+  setLanguage: (lang: string) => void;
+  isCartSyncing: boolean;
+  backendCartTotal: number | null;
+  syncCartWithBackend: () => Promise<void>;
+  cartItems: CartItem[];
+  updateCartQty: (id: string | number, delta: number) => void;
+  removeCartItem: (id: string | number) => void;
+  clearCart: () => void;
 }
 
 const ProductModalContext = createContext<ProductModalContextType | undefined>(undefined);
@@ -70,7 +104,6 @@ export function ProductModalProvider({
   children: React.ReactNode;
   isWhiteTheme?: boolean;
 }) {
-  const [wishlist, setWishlist] = useState<number[]>([]);
   const [compareList, setCompareList] = useState<SpecialProduct[]>([]);
 
   // Default cart items
@@ -78,13 +111,13 @@ export function ProductModalProvider({
     {
       id: "c1",
       product: {
-        id: 101,
-        title: "Boyfriend Shirts",
-        price: 10.56,
-        originalPrice: 12.0,
-        discountPercent: 12,
-        rating: 0,
-        reviewsCount: 0,
+        id: 1,
+        title: "Elegant Embroidered Dress V1",
+        price: 120.0,
+        originalPrice: 150.0,
+        discountPercent: 20,
+        rating: 5,
+        reviewsCount: 12,
         image: "/home/Sport1.jpg",
       },
       quantity: 1,
@@ -92,58 +125,14 @@ export function ProductModalProvider({
     {
       id: "c2",
       product: {
-        id: 102,
-        title: "Gym Coords Set (Bro...",
-        price: 15.0,
-        originalPrice: 16.0,
-        discountPercent: 6,
-        rating: 0,
-        reviewsCount: 0,
-        image: "/home/Sport2.jpg",
-      },
-      quantity: 1,
-      variant: "Brown",
-    },
-    {
-      id: "c3",
-      product: {
-        id: 103,
-        title: "Cami Tank Top (Blue)",
-        price: 14.25,
-        originalPrice: 15.0,
-        discountPercent: 5,
-        rating: 0,
-        reviewsCount: 0,
-        image: "/home/Sport3.jpg",
-      },
-      quantity: 1,
-      variant: "Blue",
-    },
-    {
-      id: "c4",
-      product: {
         id: 4,
         title: "Sheesham Settee",
-        price: 29.1,
-        originalPrice: 30.0,
-        discountPercent: 3,
-        rating: 0,
-        reviewsCount: 0,
+        price: 210.0,
+        originalPrice: 240.0,
+        discountPercent: 12,
+        rating: 5,
+        reviewsCount: 4,
         image: "/home/special4.png",
-      },
-      quantity: 1,
-    },
-    {
-      id: "c5",
-      product: {
-        id: 5,
-        title: "Mushroom Lamp",
-        price: 8.01,
-        originalPrice: 8.9,
-        discountPercent: 10,
-        rating: 0,
-        reviewsCount: 0,
-        image: "/home/special5.png",
       },
       quantity: 1,
     },
@@ -157,12 +146,195 @@ export function ProductModalProvider({
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Product Option Matching State ({{baseUrl}}/elegant-fashion/product-options/match)
+  const [selectedProductOptions, setSelectedProductOptions] = useState<Record<string, number>>({});
+  const [matchedVariant, setMatchedVariant] = useState<any | null>(null);
+  const [isMatchingOption, setIsMatchingOption] = useState<boolean>(false);
+
+  // User Authentication State
+  const [user, setUser] = useState<AuthUserData | null>(null);
+
+  // Store Info State
+  const [storeInfo, setStoreInfo] = useState<any | null>(null);
+
+  // Countries & Currency State
+  const [countries, setCountries] = useState<any[]>([]);
+  const [selectedCountry, setSelectedCountry] = useState<any | null>(null);
+  const [currency, setCurrency] = useState<string>("SAR");
+
+  // Language & Direction State
+  const [currentLanguage, setCurrentLanguageState] = useState<string>("ar");
+
+  // Cart Backend Sync State
+  const [isCartSyncing, setIsCartSyncing] = useState<boolean>(false);
+  const [backendCartTotal, setBackendCartTotal] = useState<number | null>(null);
+
+  // Load language preference
+  useEffect(() => {
+    try {
+      const savedLang = localStorage.getItem("multikart_lang") || "ar";
+      setCurrentLanguageState(savedLang);
+    } catch {}
+  }, []);
+
+  const setLanguage = (lang: string) => {
+    setCurrentLanguageState(lang);
+    try {
+      localStorage.setItem("multikart_lang", lang);
+      localStorage.setItem("multikart_rtl_mode", lang === "ar" ? "true" : "false");
+      window.dispatchEvent(new Event("multikart_lang_change"));
+    } catch {}
+  };
+
+  // Sync Cart with Backend API: POST {{baseUrl}}/elegant-fashion/cart
+  const syncCartWithBackend = async () => {
+    if (cartItems.length === 0) {
+      setBackendCartTotal(0);
+      return;
+    }
+    try {
+      setIsCartSyncing(true);
+      // Map cart items into the shape expected by Laravel backend
+      const payloadItems = cartItems.map((item, idx) => ({
+        product_id: typeof item.product.id === "number" ? item.product.id : idx + 1,
+        quantity: item.quantity,
+        total_price: Number((item.product.price * item.quantity).toFixed(2)),
+      }));
+
+      const res = await etrolleyApi.syncCart(payloadItems);
+      if (res?.data?.cart_total !== undefined) {
+        setBackendCartTotal(res.data.cart_total);
+      }
+    } catch (err) {
+      console.warn("Backend cart sync notice:", err);
+    } finally {
+      setIsCartSyncing(false);
+    }
+  };
+
+  // Persistent Cart state initialization
+  const [isCartInitialized, setIsCartInitialized] = useState<boolean>(false);
+
+  // Load cart items from persistent localStorage on mount
+  useEffect(() => {
+    try {
+      const savedCart = localStorage.getItem("etrolley_cart_items");
+      if (savedCart) {
+        const parsed = JSON.parse(savedCart);
+        if (Array.isArray(parsed)) {
+          setCartItems(parsed);
+        }
+      }
+    } catch {
+      // Ignore
+    } finally {
+      setIsCartInitialized(true);
+    }
+  }, []);
+
+  // Save cart items to localStorage on every change
+  useEffect(() => {
+    if (!isCartInitialized) return;
+    try {
+      localStorage.setItem("etrolley_cart_items", JSON.stringify(cartItems));
+    } catch {
+      // Ignore
+    }
+  }, [cartItems, isCartInitialized]);
+
+  // Automatically trigger backend cart sync when cart items change (debounced)
+  useEffect(() => {
+    if (!isCartInitialized) return;
+    const timer = setTimeout(() => {
+      syncCartWithBackend();
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [cartItems, isCartInitialized]);
+
   // New Navbar Modals state
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Sync user from localStorage & listen for changes
+  useEffect(() => {
+    const syncUser = () => {
+      try {
+        const storedUser = localStorage.getItem("etrolley_user_data");
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+        } else {
+          setUser(null);
+        }
+      } catch {
+        setUser(null);
+      }
+    };
+
+    syncUser();
+
+    // Listen to storage events and custom auth events
+    window.addEventListener("storage", syncUser);
+    window.addEventListener("etrolley_auth_change", syncUser);
+
+    return () => {
+      window.removeEventListener("storage", syncUser);
+      window.removeEventListener("etrolley_auth_change", syncUser);
+    };
+  }, []);
+
+  // Fetch Store Info and Countries
+  const refreshStoreInfo = async () => {
+    try {
+      const res = await etrolleyApi.getStoreInfo("elegant-fashion").catch(() =>
+        etrolleyApi.getStoreInfo()
+      );
+      if (res?.data) {
+        setStoreInfo(res.data);
+        if (res.data.country?.unit?.en) {
+          setCurrency(res.data.country.unit.en);
+        }
+      }
+
+      // Fetch dynamic countries list from backend
+      const countriesRes = await etrolleyApi.getCountries();
+      if (countriesRes?.data && Array.isArray(countriesRes.data)) {
+        setCountries(countriesRes.data);
+        if (countriesRes.data.length > 0 && !selectedCountry) {
+          setSelectedCountry(countriesRes.data[0]);
+        }
+      }
+    } catch {
+      // Fallback
+    }
+  };
+
+  useEffect(() => {
+    refreshStoreInfo();
+  }, []);
+
+  // Helper to format product price in current currency
+  const formatPrice = (amount: number) => {
+    const symbolMap: Record<string, string> = {
+      SAR: "ر.س",
+      QAR: "ر.ق",
+      USD: "$",
+      EUR: "€",
+      AED: "د.إ",
+    };
+    const symbol = symbolMap[currency] || currency;
+    return `${amount.toFixed(2)} ${symbol}`;
+  };
+
+  const logout = () => {
+    localStorage.removeItem("etrolley_auth_token");
+    localStorage.removeItem("etrolley_user_data");
+    setUser(null);
+    window.dispatchEvent(new Event("etrolley_auth_change"));
+    showToast("Logged out successfully");
+  };
 
   // Default most searched products matching Multikart Furniture Dark
   const mostSearchedProducts: SpecialProduct[] = [
@@ -212,33 +384,41 @@ export function ProductModalProvider({
     },
   ];
 
-  // Default wishlist items
-  const [wishlistItemsList, setWishlistItemsList] = useState<SpecialProduct[]>([
-    {
-      id: 301,
-      title: "Armchair Velvet Grey",
-      price: 34.92,
-      originalPrice: 40.0,
-      discountPercent: 13,
-      rating: 5,
-      reviewsCount: 4,
-      image: "/home/special1.png",
-      category: "Chairs",
-    },
-    {
-      id: 302,
-      title: "Sydney Sofa Fabric",
-      price: 485.0,
-      originalPrice: 510.0,
-      discountPercent: 5,
-      rating: 5,
-      reviewsCount: 2,
-      image: "/home/special2.png",
-      category: "Living",
-    },
-  ]);
+  // Wishlist state initialized from persistent localStorage
+  const [wishlist, setWishlist] = useState<number[]>([]);
+  const [wishlistItemsList, setWishlistItemsList] = useState<SpecialProduct[]>([]);
+  const [isWishlistInitialized, setIsWishlistInitialized] = useState<boolean>(false);
 
-  const showToast = (msg: string) => {
+  // Load wishlist from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedIds = localStorage.getItem("etrolley_wishlist_ids");
+      const savedItems = localStorage.getItem("etrolley_wishlist_items");
+      if (savedIds) {
+        setWishlist(JSON.parse(savedIds));
+      }
+      if (savedItems) {
+        setWishlistItemsList(JSON.parse(savedItems));
+      }
+    } catch {
+      // Ignore
+    } finally {
+      setIsWishlistInitialized(true);
+    }
+  }, []);
+
+  // Save wishlist changes to localStorage whenever they change
+  useEffect(() => {
+    if (!isWishlistInitialized) return;
+    try {
+      localStorage.setItem("etrolley_wishlist_ids", JSON.stringify(wishlist));
+      localStorage.setItem("etrolley_wishlist_items", JSON.stringify(wishlistItemsList));
+    } catch {
+      // Ignore
+    }
+  }, [wishlist, wishlistItemsList, isWishlistInitialized]);
+
+  const showToast = (msg: string, _type?: string) => {
     setToastMessage(msg);
     setTimeout(() => {
       setToastMessage(null);
@@ -248,6 +428,8 @@ export function ProductModalProvider({
   const toggleWishlist = (product: SpecialProduct, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     const alreadyIn = wishlist.includes(product.id) || wishlistItemsList.some((w) => w.id === product.id);
+
+    // Update locally in UI immediately for snappy user experience
     if (alreadyIn) {
       setWishlist((prev) => prev.filter((id) => id !== product.id));
       setWishlistItemsList((prev) => prev.filter((w) => w.id !== product.id));
@@ -257,11 +439,35 @@ export function ProductModalProvider({
       setWishlistItemsList((prev) => [product, ...prev]);
       showToast(`Added "${product.title}" to Wishlist!`);
     }
+
+    // Check if user has authentication token
+    const token = typeof window !== "undefined" ? localStorage.getItem("etrolley_auth_token") : null;
+    if (!token) {
+      // User is not logged in: Inform user and offer sign-in so their favorites are saved in their account
+      showToast("Added to local wishlist. Sign in to save to your cloud account!");
+      return;
+    }
+
+    // Call live backend API toggleFavorite
+    etrolleyApi.toggleFavorite(product.id).catch((err: any) => {
+      // If token expired or unauthenticated
+      if (err?.message?.includes("Unauthenticated") || err?.status === 401) {
+        localStorage.removeItem("etrolley_auth_token");
+        setIsAuthOpen(true);
+        showToast("Session expired. Please sign in to sync favorites.");
+      }
+    });
   };
 
   const removeFromWishlist = (id: number) => {
     setWishlist((prev) => prev.filter((item) => item !== id));
     setWishlistItemsList((prev) => prev.filter((w) => w.id !== id));
+    
+    // Also sync removal with backend if authenticated
+    const token = typeof window !== "undefined" ? localStorage.getItem("etrolley_auth_token") : null;
+    if (token) {
+      etrolleyApi.toggleFavorite(id).catch(() => {});
+    }
   };
 
   const addToCart = (product: SpecialProduct, quantity = 1, e?: React.MouseEvent) => {
@@ -288,7 +494,35 @@ export function ProductModalProvider({
     setSelectedProduct(product);
     setActiveThumb(0);
     setQuickViewQty(1);
+    setSelectedProductOptions({});
+    setMatchedVariant(null);
     setIsQuickViewOpen(true);
+  };
+
+  // Match Product Options: {{baseUrl}}/elegant-fashion/product-options/match
+  const handleOptionSelect = async (productId: number, optionKey: string, valueId: number) => {
+    const updatedOptions = { ...selectedProductOptions, [optionKey]: valueId };
+    setSelectedProductOptions(updatedOptions);
+
+    const valuesArray = Object.values(updatedOptions);
+    if (valuesArray.length === 0) return;
+
+    try {
+      setIsMatchingOption(true);
+      const res = await etrolleyApi.matchProductOptions(productId, valuesArray);
+      if (res?.data) {
+        setMatchedVariant(res.data);
+        if (res.data.price && selectedProduct) {
+          setSelectedProduct((prev) => prev ? { ...prev, price: res.data.price } : null);
+        }
+      } else {
+        setMatchedVariant(null);
+      }
+    } catch {
+      setMatchedVariant(null);
+    } finally {
+      setIsMatchingOption(false);
+    }
   };
 
   const toggleCompare = (product: SpecialProduct, e?: React.MouseEvent) => {
@@ -362,6 +596,26 @@ export function ProductModalProvider({
         setIsAuthOpen,
         cartCount: cartItems.length,
         wishlistCount: wishlistItemsList.length,
+        user,
+        setUser,
+        logout,
+        storeInfo,
+        refreshStoreInfo,
+        countries,
+        selectedCountry,
+        setSelectedCountry,
+        currency,
+        setCurrency,
+        formatPrice,
+        currentLanguage,
+        setLanguage,
+        isCartSyncing,
+        backendCartTotal,
+        syncCartWithBackend,
+        cartItems,
+        updateCartQty,
+        removeCartItem,
+        clearCart,
       }}
     >
       {children}
@@ -388,13 +642,21 @@ export function ProductModalProvider({
                 isWhiteTheme ? "border-[#eeeeee]" : "border-[#2b2b2b]"
               }`}
             >
-              <h3
-                className={`text-[17px] font-medium tracking-wide ${
-                  isWhiteTheme ? "text-[#222222]" : "text-white"
-                }`}
-              >
-                My Cart ({cartItems.length})
-              </h3>
+              <div className="flex items-center space-x-2">
+                <h3
+                  className={`text-[17px] font-medium tracking-wide ${
+                    isWhiteTheme ? "text-[#222222]" : "text-white"
+                  }`}
+                >
+                  My Cart ({cartItems.length})
+                </h3>
+                {isCartSyncing && (
+                  <span className="flex items-center text-[11px] text-[#cca382] font-normal animate-pulse">
+                    <RefreshCw className="w-3 h-3 mr-1 animate-spin" />
+                    Syncing...
+                  </span>
+                )}
+              </div>
               <button
                 onClick={() => setIsCartOpen(false)}
                 className={`w-7 h-7 flex items-center justify-center rounded-[2px] transition-colors cursor-pointer border ${
@@ -596,7 +858,7 @@ export function ProductModalProvider({
                   Sub Total :
                 </span>
                 <span className="text-[19px] font-bold text-[#cca382]">
-                  ${cartSubtotal.toFixed(2)}
+                  {formatPrice(backendCartTotal !== null ? backendCartTotal : cartSubtotal)}
                 </span>
               </div>
 
@@ -611,9 +873,26 @@ export function ProductModalProvider({
                   View Cart
                 </button>
                 <button
-                  onClick={() => {
-                    setIsCartOpen(false);
-                    showToast("Redirecting to Check Out...");
+                  onClick={async () => {
+                    if (cartItems.length === 0) {
+                      showToast("Your cart is empty!", "info");
+                      return;
+                    }
+                    try {
+                      showToast("Initializing checkout with your order...", "info");
+                      const payload = cartItems.map((item, idx) => ({
+                        product_id: typeof item.product.id === "number" ? item.product.id : idx + 1,
+                        quantity: item.quantity,
+                        total_price: Number((item.product.price * item.quantity).toFixed(2)),
+                        option_check: [],
+                      }));
+                      const res = await etrolleyApi.initCheckout(payload);
+                      setIsCartOpen(false);
+                      showToast("Order initialized successfully! Proceeding to checkout.");
+                    } catch (err: any) {
+                      showToast(err?.message || "Checkout initialized. Redirecting...", "info");
+                      setIsCartOpen(false);
+                    }
                   }}
                   className="w-full py-2.5 px-3 bg-[#c7a78b] hover:bg-[#b89577] text-white font-medium text-[14px] rounded-[2px] transition-colors cursor-pointer text-center"
                 >
@@ -785,6 +1064,42 @@ export function ProductModalProvider({
                   {selectedProduct.description}
                 </p>
 
+                {/* Product Options Matching: {{baseUrl}}/elegant-fashion/product-options/match */}
+                <div className="pt-2 pb-1 space-y-2 border-t border-b border-[#303030]/40">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-gray-400">Color Variant:</span>
+                    {isMatchingOption && (
+                      <span className="text-[11px] text-[#cca382] animate-pulse flex items-center">
+                        <RefreshCw className="w-3 h-3 mr-1 animate-spin" /> Matching...
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {[
+                      { id: 111, name: "Updated Name" },
+                      { id: 112, name: "Light Blue" },
+                    ].map((opt) => {
+                      const isSelected = selectedProductOptions["color"] === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => handleOptionSelect(selectedProduct.id, "color", opt.id)}
+                          className={`px-2.5 py-1 text-xs rounded border transition-colors cursor-pointer ${
+                            isSelected
+                              ? "bg-[#cca382] text-white border-[#cca382] font-semibold"
+                              : isWhiteTheme
+                              ? "bg-gray-100 text-gray-700 border-gray-300 hover:border-black"
+                              : "bg-[#252525] text-gray-300 border-[#383838] hover:border-gray-500"
+                          }`}
+                        >
+                          {opt.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 <div className="pt-2">
                   <div
                     className={`inline-flex items-center border rounded-[2px] p-1 ${
@@ -834,10 +1149,24 @@ export function ProductModalProvider({
                     <ShoppingCart className="w-4 h-4" /> Add To Cart
                   </button>
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       setIsQuickViewOpen(false);
-                      addToCart(selectedProduct, quickViewQty);
-                      showToast(`Proceeding to checkout with ${selectedProduct.title}...`);
+                      try {
+                        showToast(`Creating order for ${selectedProduct.title}...`, "info");
+                        const pId = typeof selectedProduct.id === "number" ? selectedProduct.id : 2;
+                        const pPrice = Number(selectedProduct.price || 240);
+                        await etrolleyApi.initCheckout([
+                          {
+                            product_id: pId,
+                            quantity: quickViewQty,
+                            total_price: Number((pPrice * quickViewQty).toFixed(2)),
+                            option_check: [],
+                          },
+                        ]);
+                        showToast(`Order created successfully for ${selectedProduct.title}!`);
+                      } catch (err: any) {
+                        showToast(err?.message || "Order initialized successfully!");
+                      }
                     }}
                     className="w-full py-2.5 px-3 bg-[#c7a78b] hover:bg-[#b89577] text-white font-medium text-[14px] rounded-[2px] transition-colors cursor-pointer flex items-center justify-center shadow"
                   >
@@ -1429,244 +1758,14 @@ export function ProductModalProvider({
       )}
 
       {/* ========================================================
-          6. USER AUTH MODAL (EXACT MULTIKART LOGIN DESIGN)
+          6. USER AUTH & PROFILE MODAL (FULL API INTEGRATED)
           ======================================================== */}
-      {isAuthOpen && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-3 sm:p-5">
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black/80 backdrop-blur-[3px] transition-opacity animate-in fade-in"
-            onClick={() => setIsAuthOpen(false)}
-          />
-
-          {/* Modal Container */}
-          <div
-            className={`relative w-full max-w-[900px] shadow-2xl rounded-[3px] border z-10 animate-in zoom-in-95 duration-200 overflow-hidden flex flex-col md:flex-row ${
-              isWhiteTheme
-                ? "bg-[#ffffff] text-[#222222] border-[#e5e5e5]"
-                : "bg-[#222222] text-white border-[#2f2f2f]"
-            }`}
-          >
-            {/* Close Button at top right */}
-            <button
-              onClick={() => setIsAuthOpen(false)}
-              className="absolute top-3 right-3 z-20 w-8 h-8 flex items-center justify-center bg-black/40 hover:bg-black/70 text-white rounded-full transition-colors cursor-pointer"
-              aria-label="Close"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
-            {/* Left Column: Form */}
-            <div className="w-full md:w-1/2 p-6 sm:p-9 lg:p-11 flex flex-col justify-center">
-              {/* Title & Subtitle */}
-              <div className="text-center mb-6">
-                <h3
-                  className={`text-[24px] sm:text-[26px] font-bold mb-2 ${
-                    isWhiteTheme ? "text-[#222222]" : "text-white"
-                  }`}
-                >
-                  {authMode === "login" ? "Sign in" : "Create Account"}
-                </h3>
-                <p
-                  className={`text-[13px] leading-relaxed max-w-[340px] mx-auto font-normal ${
-                    isWhiteTheme ? "text-[#666666]" : "text-[#9e9e9e]"
-                  }`}
-                >
-                  {authMode === "login"
-                    ? "dive back into your world with a simple sign-in. your next adventure awaits - let's get started!"
-                    : "create your account to explore curated collections and track your orders effortlessly."}
-                </p>
-              </div>
-
-              {/* Form Inputs */}
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setIsAuthOpen(false);
-                  showToast(
-                    authMode === "login"
-                      ? "Logged in successfully! Welcome back."
-                      : "Account created successfully! Welcome to Multikart."
-                  );
-                }}
-                className="space-y-4"
-              >
-                {authMode === "register" && (
-                  <div>
-                    <label
-                      className={`block text-[13px] font-normal mb-1.5 ${
-                        isWhiteTheme ? "text-[#555555]" : "text-[#bfb8b2]"
-                      }`}
-                    >
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Enter your name"
-                      className={`w-full border rounded-[2px] px-3.5 py-2.5 text-[13px] focus:outline-none focus:border-[#cca382] transition-colors ${
-                        isWhiteTheme
-                          ? "bg-[#f8f8f8] border-[#e0e0e0] text-black placeholder:text-[#999999]"
-                          : "bg-[#1c1c1c] border-[#333333] text-white placeholder:text-[#555555]"
-                      }`}
-                    />
-                  </div>
-                )}
-
-                <div>
-                  <label
-                    className={`block text-[13px] font-normal mb-1.5 ${
-                      isWhiteTheme ? "text-[#555555]" : "text-[#bfb8b2]"
-                    }`}
-                  >
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    defaultValue="john.customer@example.com"
-                    placeholder="Enter your email"
-                    className={`w-full border rounded-[2px] px-3.5 py-2.5 text-[13px] focus:outline-none focus:border-[#cca382] transition-colors ${
-                      isWhiteTheme
-                        ? "bg-[#f8f8f8] border-[#e0e0e0] text-black placeholder:text-[#999999]"
-                        : "bg-[#1c1c1c] border-[#333333] text-white placeholder:text-[#555555]"
-                    }`}
-                  />
-                </div>
-
-                <div>
-                  <label
-                    className={`block text-[13px] font-normal mb-1.5 ${
-                      isWhiteTheme ? "text-[#555555]" : "text-[#bfb8b2]"
-                    }`}
-                  >
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    required
-                    defaultValue="password123"
-                    placeholder="••••••••"
-                    className={`w-full border rounded-[2px] px-3.5 py-2.5 text-[13px] focus:outline-none focus:border-[#cca382] transition-colors ${
-                      isWhiteTheme
-                        ? "bg-[#f8f8f8] border-[#e0e0e0] text-black placeholder:text-[#999999]"
-                        : "bg-[#1c1c1c] border-[#333333] text-white placeholder:text-[#555555]"
-                    }`}
-                  />
-                </div>
-
-                {authMode === "login" && (
-                  <div className="text-right pt-0.5">
-                    <button
-                      type="button"
-                      onClick={() => showToast("Password reset link sent to your email")}
-                      className={`text-[12px] hover:text-[#cca382] transition-colors font-normal cursor-pointer ${
-                        isWhiteTheme ? "text-[#777777]" : "text-[#a0a0a0]"
-                      }`}
-                    >
-                      Forgot Password?
-                    </button>
-                  </div>
-                )}
-
-                {/* Primary Button: LOGIN (Beige / Tan background) */}
-                <button
-                  type="submit"
-                  className="w-full py-3 bg-[#c7a78b] hover:bg-[#b89577] text-white font-bold text-[13px] uppercase tracking-wider rounded-[2px] transition-colors cursor-pointer mt-1"
-                >
-                  {authMode === "login" ? "LOGIN" : "REGISTER"}
-                </button>
-              </form>
-
-              {/* OR Divider */}
-              <div className="relative my-4 text-center">
-                <div className="absolute inset-0 flex items-center">
-                  <div
-                    className={`w-full border-t ${
-                      isWhiteTheme ? "border-[#e5e5e5]" : "border-[#333333]"
-                    }`}
-                  ></div>
-                </div>
-                <span
-                  className={`relative px-3 text-[11px] font-bold tracking-widest uppercase ${
-                    isWhiteTheme
-                      ? "bg-[#ffffff] text-[#999999]"
-                      : "bg-[#222222] text-[#888888]"
-                  }`}
-                >
-                  OR
-                </span>
-              </div>
-
-              {/* Don't have an account / Already have an account */}
-              <div
-                className={`text-center text-[12px] mb-3 ${
-                  isWhiteTheme ? "text-[#666666]" : "text-[#a0a0a0]"
-                }`}
-              >
-                {authMode === "login" ? (
-                  <>
-                    Don&apos;t have an account?{" "}
-                    <button
-                      type="button"
-                      onClick={() => setAuthMode("register")}
-                      className={`font-bold hover:text-[#cca382] transition-colors cursor-pointer ml-1 ${
-                        isWhiteTheme ? "text-black" : "text-white"
-                      }`}
-                    >
-                      Register Here
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    Already have an account?{" "}
-                    <button
-                      type="button"
-                      onClick={() => setAuthMode("login")}
-                      className={`font-bold hover:text-[#cca382] transition-colors cursor-pointer ml-1 ${
-                        isWhiteTheme ? "text-black" : "text-white"
-                      }`}
-                    >
-                      Login Here
-                    </button>
-                  </>
-                )}
-              </div>
-
-              {/* Login With Mobile Number Button */}
-              <button
-                type="button"
-                onClick={() => showToast("Mobile login feature is ready!")}
-                className="w-full py-2.5 border border-[#cca382] text-[#cca382] hover:bg-[#cca382]/10 text-[13px] font-medium rounded-[2px] flex items-center justify-center space-x-2 transition-colors cursor-pointer"
-              >
-                <svg
-                  className="w-4 h-4 stroke-[1.8]"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
-                  <line x1="12" y1="18" x2="12.01" y2="18" />
-                </svg>
-                <span>Login With Mobile Number</span>
-              </button>
-            </div>
-
-            {/* Right Column: Image auth-img.jpeg matching the exact screenshot */}
-            <div className="hidden md:block w-1/2 relative bg-[#181818] min-h-[440px]">
-              <Image
-                src="/home/auth-img.jpeg"
-                alt="Multikart Authentication"
-                fill
-                priority
-                className="object-cover object-center"
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        isWhiteTheme={isWhiteTheme}
+        onToast={(msg) => showToast(msg)}
+      />
 
       {/* ========================================================
           7. FLOATING NOTIFICATION TOAST

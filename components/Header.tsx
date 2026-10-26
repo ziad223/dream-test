@@ -12,6 +12,7 @@ import {
   Menu,
   X,
   Star,
+  LogOut,
 } from "lucide-react";
 
 import { useProductModal } from "./ProductModalContext";
@@ -32,11 +33,15 @@ export default function Header({
     setIsAuthOpen,
     cartCount,
     wishlistCount,
+    user,
+    logout,
+    storeInfo,
   } = useProductModal();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [openMobileSubmenu, setOpenMobileSubmenu] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -92,9 +97,10 @@ export default function Header({
           <Link href="/" className="flex items-center shrink-0">
             <div className="relative h-7 w-[120px] sm:h-8 sm:w-[145px]">
               <Image
-                src="/home/logo.png"
-                alt="Multikart"
+                src={storeInfo?.images?.logo || "/home/logo.png"}
+                alt={storeInfo?.name || "Multikart"}
                 fill
+                sizes="(max-width: 640px) 120px, 145px"
                 priority
                 className="object-contain object-left"
               />
@@ -756,14 +762,82 @@ export default function Header({
               )}
             </button>
 
-            {/* User Icon: Shows on all devices */}
-            <button
-              onClick={() => setIsAuthOpen(true)}
-              className="p-1 hover:text-[#d4996a] transition-colors cursor-pointer"
-              aria-label="Account"
-            >
-              <User className="w-5 h-5 stroke-[1.8]" />
-            </button>
+            {/* User Account / Profile: Shows on all devices */}
+            {user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  className="flex items-center space-x-2 pl-2 pr-2.5 py-1 rounded-full bg-[#2a2623] hover:bg-[#332e2a] border border-[#cca382]/30 text-white transition-all duration-200 cursor-pointer shadow-sm group"
+                  aria-label="Account Menu"
+                >
+                  {/* User Avatar */}
+                  <div className="w-6 h-6 rounded-full bg-[#cca382] text-black font-bold text-xs flex items-center justify-center shrink-0 uppercase overflow-hidden ring-1 ring-[#cca382]">
+                    {user.avatar || user.image ? (
+                      <img src={user.avatar || user.image} alt={user.name} className="w-full h-full object-cover rounded-full" />
+                    ) : (
+                      user.name?.charAt(0) || "U"
+                    )}
+                  </div>
+
+                  {/* User greeting and name */}
+                  <div className="hidden sm:flex flex-col text-left leading-tight">
+                    <span className="text-[10px] text-[#cca382] font-medium tracking-wider">مرحباً</span>
+                    <span className="text-[12px] font-semibold text-white max-w-[110px] truncate group-hover:text-[#cca382] transition-colors">
+                      {user.name}
+                    </span>
+                  </div>
+
+                  <ChevronDown className={`w-3.5 h-3.5 text-gray-400 group-hover:text-white transition-transform duration-200 ${userDropdownOpen ? "rotate-180" : ""}`} />
+                </button>
+
+                {/* User Dropdown Menu */}
+                {userDropdownOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-[80]"
+                      onClick={() => setUserDropdownOpen(false)}
+                    />
+                    <div className="absolute right-0 top-full mt-2 w-52 bg-[#1c1c1c] border border-[#333333] rounded-[4px] shadow-2xl py-2 z-[90] animate-in fade-in slide-in-from-top-2 duration-200 text-right font-sans">
+                      <div className="px-3.5 py-2 border-b border-[#2a2a2a] mb-1">
+                        <div className="text-[13px] font-bold text-white truncate">{user.name}</div>
+                        <div className="text-[11px] text-gray-400 truncate">{user.email}</div>
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          setUserDropdownOpen(false);
+                          setIsAuthOpen(true);
+                        }}
+                        className="w-full flex items-center justify-between px-3.5 py-2 text-[13px] text-gray-200 hover:text-white hover:bg-[#282828] transition-colors cursor-pointer"
+                      >
+                        <User className="w-4 h-4 text-[#cca382]" />
+                        <span>الملف الشخصي والحساب</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setUserDropdownOpen(false);
+                          logout();
+                        }}
+                        className="w-full flex items-center justify-between px-3.5 py-2 text-[13px] text-red-400 hover:text-red-300 hover:bg-[#282828] transition-colors cursor-pointer border-t border-[#2a2a2a] mt-1 pt-2"
+                      >
+                        <LogOut className="w-4 h-4 text-red-400" />
+                        <span>تسجيل الخروج</span>
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsAuthOpen(true)}
+                className="p-1 hover:text-[#d4996a] transition-colors cursor-pointer flex items-center space-x-1"
+                aria-label="Account"
+                title="تسجيل الدخول / إنشاء حساب"
+              >
+                <User className="w-5 h-5 stroke-[1.8]" />
+              </button>
+            )}
           </div>
         </div>
       </div>

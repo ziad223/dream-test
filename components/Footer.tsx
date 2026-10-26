@@ -4,8 +4,10 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Phone, Mail, ChevronDown } from "lucide-react";
+import { useProductModal } from "./ProductModalContext";
 
 export default function Footer({ isWhiteTheme = false }: { isWhiteTheme?: boolean }) {
+  const { storeInfo } = useProductModal();
   // Mobile accordion active keys
   const [openSection, setOpenSection] = useState<string | null>(null);
 
@@ -76,15 +78,16 @@ export default function Footer({ isWhiteTheme = false }: { isWhiteTheme?: boolea
           <Link href="/" className="inline-block">
             <div className="relative h-7 w-36">
               <Image
-                src="/home/logo.png"
-                alt="Multikart"
+                src={storeInfo?.images?.footer_logo || storeInfo?.images?.logo || "/home/logo.png"}
+                alt={storeInfo?.name || "Multikart"}
                 fill
+                sizes="144px"
                 className="object-contain object-left"
               />
             </div>
           </Link>
           <p className="text-[13.5px] leading-relaxed text-[#999999] max-w-sm">
-            Discover the latest trends and enjoy seamless shopping with our exclusive collections.
+            {storeInfo?.seo?.description?.ar || "Discover the latest trends and enjoy seamless shopping with our exclusive collections."}
           </p>
           <div className="flex items-center space-x-6 pt-1 text-white">
             <a href="#" className="hover:text-[#c7a78b] transition-colors" aria-label="Facebook">
@@ -227,15 +230,16 @@ export default function Footer({ isWhiteTheme = false }: { isWhiteTheme?: boolea
             <Link href="/" className="inline-block">
               <div className="relative h-7 w-36">
                 <Image
-                  src="/home/logo.png"
-                  alt="Multikart"
+                  src={storeInfo?.images?.footer_logo || storeInfo?.images?.logo || "/home/logo.png"}
+                  alt={storeInfo?.name || "Multikart"}
                   fill
+                  sizes="144px"
                   className="object-contain object-left"
                 />
               </div>
             </Link>
             <p className="text-[13px] leading-relaxed text-[#888888]">
-              Discover the latest trends and enjoy seamless shopping with our exclusive collections.
+              {storeInfo?.seo?.description?.ar || "Discover the latest trends and enjoy seamless shopping with our exclusive collections."}
             </p>
             <div className="flex items-center space-x-5 pt-3 text-white">
               <a href="#" className="hover:text-[#c7a78b] transition-colors" aria-label="Facebook">

@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 import { SpecialProduct } from "./ProductModalContext";
+import { etrolleyApi } from "@/lib/api";
 
-const specialProducts: SpecialProduct[] = [
+const fallbackProducts: SpecialProduct[] = [
   {
     id: 1,
     title: "Wooden Diwan",
@@ -77,7 +78,58 @@ const specialProducts: SpecialProduct[] = [
   },
 ];
 
-export default function FeaturedProducts({ isWhiteTheme = false }: { isWhiteTheme?: boolean }) {
+export default function FeaturedProducts({
+  isWhiteTheme = false,
+}: {
+  isWhiteTheme?: boolean;
+}) {
+  const [products, setProducts] = useState<SpecialProduct[]>(fallbackProducts);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchProducts() {
+      try {
+        const res: any = await etrolleyApi.getProducts({ per_page: 5 });
+        const items = res?.data?.data || (Array.isArray(res?.data) ? res.data : []);
+        if (isMounted && items && items.length > 0) {
+          const mapped: SpecialProduct[] = items.slice(0, 5).map((item: any, idx: number) => {
+            const price = Number(item.price) || 50;
+            const originalPrice = Number(item.old_price) || (price > 0 ? Number((price * 1.15).toFixed(2)) : 60);
+            const discountPercent =
+              originalPrice > price
+                ? Math.round(((originalPrice - price) / originalPrice) * 100)
+                : 0;
+
+            return {
+              id: item.id || idx + 1,
+              title: item.name || `Product ${idx + 1}`,
+              price,
+              originalPrice,
+              discountPercent,
+              rating: item.rate || 0,
+              reviewsCount: item.count_rate || 0,
+              image: item.image || fallbackProducts[idx % fallbackProducts.length].image,
+              category: item.category || "General",
+              stock: item.qty || 10,
+              description: item.sub_description || item.description || "Crafted with elegance...",
+            };
+          });
+          setProducts(mapped);
+        }
+      } catch (err) {
+        console.warn("Could not fetch API products, using fallback:", err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    fetchProducts();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <section
       id="shop"
@@ -100,9 +152,9 @@ export default function FeaturedProducts({ isWhiteTheme = false }: { isWhiteThem
           </p>
         </div>
 
-        {/* 5-Column Products Grid using reusable clean ProductCard */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 lg:gap-6">
-          {specialProducts.map((product) => (
+        {/* Products Grid: 2 columns on mobile (grid-cols-2), 3 on tablet, 5 on desktop */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-5 lg:gap-6">
+          {products.map((product) => (
             <ProductCard
               key={product.id}
               product={product}
@@ -116,5 +168,5 @@ export default function FeaturedProducts({ isWhiteTheme = false }: { isWhiteThem
   );
 }
 
-export { specialProducts };
+export { fallbackProducts as specialProducts };
 export type { SpecialProduct };

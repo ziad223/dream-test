@@ -1,0 +1,1649 @@
+{
+  "info": {
+    "_collection_link": "https://go.postman.co/collection/21848287-600727dc-87cf-46d3-8fa6-24c4d6722495?source=collection_link",
+    "_exporter_id": "21848287",
+    "_postman_id": "600727dc-87cf-46d3-8fa6-24c4d6722495",
+    "name": "Etrolley Complete API Collection Copy",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "item": [
+        {
+          "item": [
+            {
+              "name": "all",
+              "request": {
+                "auth": {
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "type": "string",
+                      "value": "{{vault:auth_secret_1bt2}}"
+                    }
+                  ],
+                  "type": "bearer"
+                },
+                "header": [],
+                "method": "GET",
+                "url": {
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "notifications"
+                  ],
+                  "raw": "{{baseUrl}}/notifications"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete all",
+              "request": {
+                "body": {
+                  "mode": "raw",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  },
+                  "raw": ""
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "url": {
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "notifications",
+                    "clear-all"
+                  ],
+                  "raw": "{{base_url}}/notifications/clear-all"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete",
+              "request": {
+                "auth": {
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "type": "string",
+                      "value": "{{vault:auth_secret_0n3t}}"
+                    }
+                  ],
+                  "type": "bearer"
+                },
+                "body": {
+                  "mode": "raw",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  },
+                  "raw": "{\r\n  \"name\": {\"en\":\"test\",\"ar\":\"test\"},\r\n  \"section_id\": 1,\r\n  \"sort\":1,\r\n//   \"state\":\"online\",\r\n\"state\":\"offline\",\r\n// \"icon\":file,\r\n\"meta_title\":{\"en\":\"test\",\"ar\":\"test\"},\r\n\"meta_description\":{\"en\":\"test\",\"ar\":\"test\"},\r\n\"meta_image\":\"file\"\r\n}"
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "url": {
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "notifications",
+                    "{{id}}"
+                  ],
+                  "raw": "{{base_url}}/notifications/{{id}}"
+                }
+              },
+              "response": []
+            }
+          ],
+          "name": "Notifications Copy"
+        },
+        {
+          "item": [
+            {
+              "name": "show",
+              "request": {
+                "auth": {
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "type": "string",
+                      "value": "{{vault:auth_secret_0rjl}}"
+                    }
+                  ],
+                  "type": "bearer"
+                },
+                "header": [
+                  {
+                    "key": "Accept-Charset",
+                    "value": "json"
+                  },
+                  {
+                    "key": "Accept-Encoding",
+                    "value": "json"
+                  }
+                ],
+                "method": "GET",
+                "url": {
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "{{ordr_id}}"
+                  ],
+                  "raw": "{{baseUrl}}/orders/{{ordr_id}}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "cancel",
+              "request": {
+                "auth": {
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "type": "string",
+                      "value": "{{vault:auth_secret_0rjl}}"
+                    }
+                  ],
+                  "type": "bearer"
+                },
+                "header": [],
+                "method": "GET",
+                "url": {
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "{{ordr_id}}",
+                    "cancel"
+                  ],
+                  "raw": "{{baseUrl}}/orders/{{ordr_id}}/cancel"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "orders",
+              "request": {
+                "auth": {
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "type": "string",
+                      "value": "{{vault:auth_secret_1e6z}}"
+                    }
+                  ],
+                  "type": "bearer"
+                },
+                "header": [],
+                "method": "GET",
+                "url": {
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "profile",
+                    "orders"
+                  ],
+                  "raw": "{{baseUrl}}/auth/profile/orders"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "init checkout with auth",
+              "request": {
+                "auth": {
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "type": "string",
+                      "value": "{{vault:auth_secret_000y}}"
+                    }
+                  ],
+                  "type": "bearer"
+                },
+                "body": {
+                  "mode": "raw",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  },
+                  "raw": "{\r\n    \"items\": [\r\n        {\r\n            \"product_id\": 2,\r\n            \"quantity\": 1,\r\n            // \"final_option\": 0,\r\n            \"option_check\": [],\r\n            \"total_price\": 240.00\r\n        }\r\n    ]\r\n}"
+                },
+                "header": [],
+                "method": "POST",
+                "url": {
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "order",
+                    "create"
+                  ],
+                  "raw": "{{baseUrl}}/order/create"
+                }
+              },
+              "response": []
+            }
+          ],
+          "name": "orders"
+        },
+        {
+          "item": [
+            {
+              "name": "countries",
+              "request": {
+                "auth": {
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "type": "string",
+                      "value": "{{vault:auth_secret_0az6}}"
+                    }
+                  ],
+                  "type": "bearer"
+                },
+                "header": [],
+                "method": "GET",
+                "url": {
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "market",
+                    "countries",
+                    "1",
+                    "cities"
+                  ],
+                  "raw": "{{baseUrl}}/market/countries/1/cities"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "cities by countries",
+              "request": {
+                "auth": {
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "type": "string",
+                      "value": "{{vault:auth_secret_0jhr}}"
+                    }
+                  ],
+                  "type": "bearer"
+                },
+                "header": [],
+                "method": "GET",
+                "url": {
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "market",
+                    "countries",
+                    "{country_id}",
+                    "cities"
+                  ],
+                  "raw": "{{baseUrl}}/market/countries/{country_id}/cities"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "region",
+              "request": {
+                "header": [],
+                "method": "GET",
+                "url": {
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "market",
+                    "{{city_id}}",
+                    "active-regions"
+                  ],
+                  "raw": "{{base_url}}/api/market/{{city_id}}/active-regions"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Address",
+              "request": {
+                "auth": {
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "type": "string",
+                      "value": "{{vault:auth_secret_0jhr}}"
+                    }
+                  ],
+                  "type": "bearer"
+                },
+                "header": [],
+                "method": "GET",
+                "url": {
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    "addresses"
+                  ],
+                  "raw": "{{baseUrl}}/user/addresses"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "store address",
+              "request": {
+                "auth": {
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "type": "string",
+                      "value": "{{vault:auth_secret_0jhr}}"
+                    }
+                  ],
+                  "type": "bearer"
+                },
+                "body": {
+                  "mode": "raw",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  },
+                  "raw": "{\r\n  \"title\": \"المنزل\",\r\n  \"city_id\": 1,\r\n  \"region_id\": 5,\r\n  \"street\": \"شارع الملك فهد\",\r\n  \"building\": \"مبنى 12\",\r\n  \"other_details\": \"بجانب المسجد\",\r\n  \"lat\": 24.7136,\r\n  \"long\": 46.6753\r\n}"
+                },
+                "header": [],
+                "method": "POST",
+                "url": {
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    "addresses"
+                  ],
+                  "raw": "{{baseUrl}}/user/addresses"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "show address",
+              "request": {
+                "auth": {
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "type": "string",
+                      "value": "{{vault:auth_secret_0jhr}}"
+                    }
+                  ],
+                  "type": "bearer"
+                },
+                "header": [],
+                "method": "GET",
+                "url": {
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    "addresses",
+                    "{{address_id}}"
+                  ],
+                  "raw": "{{baseUrl}}/user/addresses/{{address_id}}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update Address",
+              "request": {
+                "auth": {
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "type": "string",
+                      "value": "{{vault:auth_secret_0jhr}}"
+                    }
+                  ],
+                  "type": "bearer"
+                },
+                "body": {
+                  "mode": "raw",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  },
+                  "raw": "{\r\n  \"title\": \"المنزل\",\r\n  \"city_id\": 1,\r\n  \"region_id\": 5,\r\n  \"street\": \"شارع الملك فهد\",\r\n  \"building\": \"مبنى 12\",\r\n  \"other_details\": \"بجانب المسجد\",\r\n  \"lat\": 24.7136,\r\n  \"long\": 46.6753\r\n}"
+                },
+                "header": [],
+                "method": "PUT",
+                "url": {
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    "addresses",
+                    "9"
+                  ],
+                  "raw": "{{baseUrl}}/user/addresses/9"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Address",
+              "request": {
+                "auth": {
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "type": "string",
+                      "value": "{{vault:auth_secret_0jhr}}"
+                    }
+                  ],
+                  "type": "bearer"
+                },
+                "header": [],
+                "method": "DELETE",
+                "url": {
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    "addresses",
+                    "14"
+                  ],
+                  "raw": "{{baseUrl}}/user/addresses/14"
+                }
+              },
+              "response": []
+            }
+          ],
+          "name": "Address"
+        },
+        {
+          "name": "Register",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\r\n    \"token\": \"dO1TzOMyDrSwPntOaGUWoyGLZxPamprplnegBdt9EoCVXhkWvbMbNEkFVRT8\",\r\n    \"name\": \"اسم المستخدم\",\r\n    \"password\": \"12345678\",\r\n    \"password_confirmation\": \"12345678\",\r\n    \"email\":\"test@gmail.com\",\r\n    \"phone\":\"+974123456478\"\r\n}"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "roles",
+                "24",
+                "edit"
+              ],
+              "raw": "{{base_url}}/roles/24/edit"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Register OTP",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\r\n    \"identifier\": \"test@gmail.com\",\r\n    \"type\":\"email\",\r\n    \"code\": \"123123\"\r\n}"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "verify-register-otp"
+              ],
+              "raw": "{{baseUrl}}/auth/verify-register-otp"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\r\n    \"identifier\": \"test@gmail.com\",\r\n    \"type\": \"email\",\r\n    \"password\": \"12345678\"\r\n}"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ],
+              "raw": "{{baseUrl}}/auth/login"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\r\n    \"email\": \"sara@example.com\"\r\n}"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "type": "text",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "forgot-password"
+              ],
+              "raw": "{{baseUrl}}/api/v1/auth/forgot-password"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Reset Code",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\r\n    \"email\": \"sara@example.com\",\r\n    \"code\": \"123456\"\r\n}"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "verify-reset-code"
+              ],
+              "raw": "{{baseUrl}}/auth/verify-reset-code"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\r\n    \"email\": \"sara@example.com\",\r\n    \"token\": \"123456\",\r\n    \"password\": \"newpassword123\",\r\n    \"password_confirmation\": \"newpassword123\"\r\n}"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "reset-password"
+              ],
+              "raw": "{{baseUrl}}/auth/reset-password"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{vault:auth_secret_1e6z}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "profile"
+              ],
+              "raw": "{{baseUrl}}/auth/profile"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Profile",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{vault:auth_secret_1e6z}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\r\n    \"name\": \"Sara Almakabaa Updated\",\r\n    \"phone\":\"+97412345677\",\r\n    \"email\":\"test@gmail.com\"\r\n}"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "profile",
+                "orders"
+              ],
+              "raw": "{{baseUrl}}/auth/profile/orders"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Profile image",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{vault:auth_secret_1e6z}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "body": {
+              "formdata": [
+                {
+                  "key": "image",
+                  "src": [
+                    "nJoLBFP1R/logo (8).png"
+                  ],
+                  "type": "file"
+                }
+              ],
+              "mode": "formdata"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "profile",
+                "update-image"
+              ],
+              "raw": "{{baseUrl}}/auth/profile/update-image"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Profile password",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{vault:auth_secret_1e6z}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "body": {
+              "formdata": [
+                {
+                  "key": "password",
+                  "type": "text",
+                  "value": "12345678"
+                },
+                {
+                  "key": "password_confirmation",
+                  "type": "text",
+                  "value": "12345678"
+                }
+              ],
+              "mode": "formdata"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "profile",
+                "update-password"
+              ],
+              "raw": "{{baseUrl}}/auth/profile/update-password"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "check-and-send-otp",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\r\n    \"type\":\"phone\",\r\n    \"identifier\":\"+97412345678\"\r\n}"
+            },
+            "header": [
+              {
+                "key": "Accept-Encoding",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "check-and-send-otp"
+              ],
+              "raw": "{{base_url}}/auth/check-and-send-otp"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "wallet",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{vault:auth_secret_069d}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "header": [],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "wallet"
+              ],
+              "raw": "{{baseUrl}}/auth/wallet"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "points",
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{vault:auth_secret_0e1z}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "header": [],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "points"
+              ],
+              "raw": "{{baseUrl}}/auth/points"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "countries",
+          "request": {
+            "header": [],
+            "method": "GET",
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Auth"
+    },
+    {
+      "item": [
+        {
+          "name": "info",
+          "request": {
+            "header": [
+              {
+                "key": "Accept",
+                "type": "text",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept-Language",
+                "type": "text",
+                "value": "en"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "store",
+                "elegant-fashion",
+                "info"
+              ],
+              "raw": "{{baseUrl}}/api/v1/store/elegant-fashion/info"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Setting"
+    },
+    {
+      "item": [
+        {
+          "name": "v1",
+          "request": {
+            "header": [
+              {
+                "key": "Accept",
+                "type": "text",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "store",
+                "elegant-fashion",
+                "home"
+              ],
+              "raw": "{{baseUrl}}/api/v1/store/elegant-fashion/home"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Home"
+    },
+    {
+      "item": [
+        {
+          "name": "cart",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\r\n    \"items\": []\r\n}"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "type": "text",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "elegant-fashion",
+                "cart"
+              ],
+              "raw": "{{baseUrl}}/elegant-fashion/cart"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Cart"
+    },
+    {
+      "item": [
+        {
+          "name": "main-categories",
+          "request": {
+            "description": "### شرح عام عن الـ API:\nجلب التصنيفات الرئيسية للمتجر مع دعم البحث والترتيب والتقسيم (Pagination).\n\n### شرح الـ Parameters (Query Params):\n* **search** (String - Optional): كلمة البحث للبحث عن تصنيف معين.\n* **sort_by** (String - Optional): طريقة الترتيب (مثال: alphabetical).\n* **per_page** (Number - Optional): عدد العناصر في كل صفحة.\n* **page** (Number - Optional): رقم الصفحة الحالية.\n\n### شرح الـ Response:\n* **success** (Boolean): نجاح العملية.\n* **message** (String): رسالة توضيحية.\n* **data** (Array): قائمة التصنيفات.\n* **meta** (Object): معلومات التقسيم (current_page, last_page, per_page, total).\n* **links** (Object): روابط التنقل بين صفحات النتائج (first, last, prev, next).",
+            "header": [
+              {
+                "key": "Accept",
+                "type": "text",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "store",
+                "elegant-fashion",
+                "main-categories"
+              ],
+              "query": [
+                {
+                  "description": "كلمة البحث عن التصنيف (String)",
+                  "key": "search",
+                  "value": "ملابس"
+                },
+                {
+                  "description": "طريقة الترتيب (String)",
+                  "key": "sort_by",
+                  "value": "alphabetical"
+                },
+                {
+                  "description": "عدد العناصر لكل صفحة (Number)",
+                  "key": "per_page",
+                  "value": "5"
+                },
+                {
+                  "description": "رقم الصفحة (Number)",
+                  "key": "page",
+                  "value": "1"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/store/elegant-fashion/main-categories?search=ملابس&sort_by=alphabetical&per_page=5&page=1"
+            }
+          },
+          "response": [
+            {
+              "_postman_previewlanguage": "Text",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Categories retrieved successfully\",\n    \"data\": [],\n    \"meta\": {\n        \"current_page\": 1,\n        \"last_page\": 1,\n        \"per_page\": 5,\n        \"total\": 0\n    },\n    \"links\": {\n        \"first\": \"{{baseUrl}}/api/v1/store/elegant-fashion/main-categories?page=1\",\n        \"last\": \"{{baseUrl}}/api/v1/store/elegant-fashion/main-categories?page=1\",\n        \"prev\": null,\n        \"next\": null\n    }\n}",
+              "code": 200,
+              "cookie": [],
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "name": "main-categories",
+              "originalRequest": {
+                "header": [
+                  {
+                    "key": "Accept",
+                    "type": "text",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "url": {
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "store",
+                    "elegant-fashion",
+                    "main-categories"
+                  ],
+                  "query": [
+                    {
+                      "disabled": true,
+                      "key": "search",
+                      "value": "ملابس"
+                    },
+                    {
+                      "key": "sort_by",
+                      "value": "alphabetical"
+                    },
+                    {
+                      "key": "per_page",
+                      "value": "5"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    }
+                  ],
+                  "raw": "{{baseUrl}}/api/v1/store/elegant-fashion/main-categories?sort_by=alphabetical&per_page=5&page=1"
+                }
+              },
+              "status": "OK"
+            }
+          ]
+        },
+        {
+          "name": "main-categories Multi",
+          "request": {
+            "description": "### شرح عام عن الـ API:\nجلب التصنيفات الرئيسية للمتجر مع دعم البحث والترتيب والتقسيم (Pagination).\n\n### شرح الـ Parameters (Query Params):\n* **search** (String - Optional): كلمة البحث للبحث عن تصنيف معين.\n* **sort_by** (String - Optional): طريقة الترتيب (مثال: alphabetical).\n* **per_page** (Number - Optional): عدد العناصر في كل صفحة.\n* **page** (Number - Optional): رقم الصفحة الحالية.\n\n### شرح الـ Response:\n* **success** (Boolean): نجاح العملية.\n* **message** (String): رسالة توضيحية.\n* **data** (Array): قائمة التصنيفات.\n* **meta** (Object): معلومات التقسيم (current_page, last_page, per_page, total).\n* **links** (Object): روابط التنقل بين صفحات النتائج (first, last, prev, next).",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "store",
+                "elegant-fashion",
+                "main-categories"
+              ],
+              "query": [
+                {
+                  "description": "كلمة البحث عن التصنيف (String)",
+                  "key": "search",
+                  "value": "ملابس"
+                },
+                {
+                  "description": "طريقة الترتيب (String)",
+                  "key": "sort_by",
+                  "value": "alphabetical"
+                },
+                {
+                  "description": "عدد العناصر لكل صفحة (Number)",
+                  "key": "per_page",
+                  "value": "5"
+                },
+                {
+                  "description": "رقم الصفحة (Number)",
+                  "key": "page",
+                  "value": "1"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/store/elegant-fashion/main-categories?search=ملابس&sort_by=alphabetical&per_page=5&page=1"
+            }
+          },
+          "response": [
+            {
+              "_postman_previewlanguage": "Text",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Categories retrieved successfully\",\n    \"data\": [],\n    \"meta\": {\n        \"current_page\": 1,\n        \"last_page\": 1,\n        \"per_page\": 5,\n        \"total\": 0\n    },\n    \"links\": {\n        \"first\": \"{{baseUrl}}/api/v1/store/elegant-fashion/main-categories?page=1\",\n        \"last\": \"{{baseUrl}}/api/v1/store/elegant-fashion/main-categories?page=1\",\n        \"prev\": null,\n        \"next\": null\n    }\n}",
+              "code": 200,
+              "cookie": [],
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "name": "main-categories",
+              "originalRequest": {
+                "header": [
+                  {
+                    "key": "Accept",
+                    "type": "text",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "url": {
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "store",
+                    "elegant-fashion",
+                    "main-categories"
+                  ],
+                  "query": [
+                    {
+                      "disabled": true,
+                      "key": "search",
+                      "value": "ملابس"
+                    },
+                    {
+                      "key": "sort_by",
+                      "value": "alphabetical"
+                    },
+                    {
+                      "key": "per_page",
+                      "value": "5"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    }
+                  ],
+                  "raw": "{{baseUrl}}/api/v1/store/elegant-fashion/main-categories?sort_by=alphabetical&per_page=5&page=1"
+                }
+              },
+              "status": "OK"
+            }
+          ]
+        },
+        {
+          "name": "show",
+          "request": {
+            "description": "### شرح عام عن الـ API:\nجلب تفاصيل تصنيف رئيسي معين بناءً على معرف التصنيف (ID).\n\n### شرح الـ Path Parameters:\n* **id** (Number): معرف التصنيف المطلوب عرضه في الرابط.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "en"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "main-categories",
+                "0"
+              ],
+              "raw": "{{baseUrl}}/main-categories/0"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Category"
+    },
+    {
+      "item": [
+        {
+          "name": "filter",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "bearer": [
+                {
+                  "key": "token",
+                  "type": "string",
+                  "value": "{{vault:auth_secret_0nzt}}"
+                }
+              ],
+              "type": "bearer"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": ""
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "en"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "new",
+                "etrolley",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "store",
+                "elegant-fashion",
+                "products",
+                "filter"
+              ],
+              "protocol": "https",
+              "query": [
+                {
+                  "disabled": true,
+                  "key": "section_id",
+                  "value": ""
+                },
+                {
+                  "disabled": true,
+                  "key": "brand_ids[0]",
+                  "value": "5"
+                },
+                {
+                  "disabled": true,
+                  "key": "brand_ids[1]",
+                  "value": "8"
+                },
+                {
+                  "disabled": true,
+                  "key": "from",
+                  "value": "50"
+                },
+                {
+                  "disabled": true,
+                  "key": "to",
+                  "value": "500"
+                },
+                {
+                  "disabled": true,
+                  "key": "rating",
+                  "value": "4"
+                },
+                {
+                  "disabled": true,
+                  "key": "options[1][0]",
+                  "value": "3"
+                },
+                {
+                  "disabled": true,
+                  "key": "word",
+                  "value": "شيرت"
+                },
+                {
+                  "disabled": true,
+                  "key": "sort",
+                  "value": "sale_price"
+                },
+                {
+                  "disabled": true,
+                  "key": "order_by",
+                  "value": "asc"
+                },
+                {
+                  "disabled": true,
+                  "key": "per_page",
+                  "value": "15"
+                },
+                {
+                  "disabled": true,
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "is_favourite",
+                  "value": "true"
+                }
+              ],
+              "raw": "https://new.etrolley.net/api/v1/store/elegant-fashion/products/filter?is_favourite=true"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "show",
+          "request": {
+            "header": [
+              {
+                "key": "Accept",
+                "type": "text",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "elegant-fashion",
+                "products",
+                "{{productid}}"
+              ],
+              "raw": "{{baseUrl}}/elegant-fashion/products/{{productid}}"
+            }
+          },
+          "response": [
+            {
+              "_postman_previewlanguage": null,
+              "body": "{\n    \"success\": true,\n    \"message\": \"message.product_found\",\n    \"errors\": null,\n    \"data\": {\n        \"id\": 1,\n        \"product\": {\n            \"id\": 1,\n            \"name\": \"Elegant Embroidered...\",\n            \"is_favorit\": false,\n            \"price\": 249,\n            \"old_price\": 299,\n            \"is_option\": 0,\n            \"note\": \"page.free_delivery\",\n            \"range_price\": null,\n            \"qty\": 50,\n            \"jewelry\": null,\n            \"rate\": 0,\n            \"count_rate\": 347,\n            \"offer\": null,\n            \"brand_name\": null,\n            \"brand_logo\": null,\n            \"category\": null,\n            \"sku\": \"PRD-001\",\n            \"link\": \"fashion.etrolly.netproduct/1/Elegant Embroidered Dress V1\",\n            \"seo_title\": \"Evening Dress V1\",\n            \"seo_description\": \"Embroidered dress.\",\n            \"seo_keyword\": \"\",\n            \"sub_description\": \"Luxury evening dress for happy grand events.\",\n            \"instgram_link\": \"\",\n            \"msg\": \"message.welcome whatsapp%20model.name%20:%20Elegant Embroidered Dress V1%20%20model.id%20:%201%20%20link:%20fashion.etrolly.netproduct/1/Elegant Embroidered Dress V1\",\n            \"count_view\": 347,\n            \"is_rate\": false,\n            \"min_qnt\": 1,\n            \"max_qnt\": 5\n        },\n        \"product_informations\": [],\n        \"options\": [],\n        \"options_check\": [],\n        \"images\": [\n            {\n                \"id\": 1,\n                \"image_path\": \"https://marketetrolly.s3.eu-north-1.amazonaws.com/media/118/product/2026/04/445115062_1777535187.webp\",\n                \"thump_path\": \"https://marketetrolly.s3.eu-north-1.amazonaws.com/media/118/product/2026/04/445115062_1777535187.webp\"\n            }\n        ],\n        \"rate\": 0,\n        \"count_rate\": 0,\n        \"count_sold\": 1,\n        \"similar_products\": [\n            {\n                \"id\": 10,\n                \"name\": \"Luxury Classic Dress...\",\n                \"is_favorit\": false,\n                \"image\": \"https://marketetrolly.s3.eu-north-1.amazonaws.com/media/118/product/2026/04/445115062_1777535187.webp\",\n                \"price\": 300,\n                \"old_price\": null,\n                \"is_option\": 0,\n                \"note\": null,\n                \"range_price\": null,\n                \"qty\": 0,\n                \"jewelry\": null,\n                \"rate\": 0,\n                \"count_rate\": 340,\n                \"offer\": null\n            },\n            {\n                \"id\": 6,\n                \"name\": \"Smooth Satin Dress V...\",\n                \"is_favorit\": false,\n                \"image\": \"https://marketetrolly.s3.eu-north-1.amazonaws.com/media/118/product/2026/04/445115062_1777535187.webp\",\n                \"price\": 280,\n                \"old_price\": null,\n                \"is_option\": 0,\n                \"note\": null,\n                \"range_price\": null,\n                \"qty\": 40,\n                \"jewelry\": null,\n                \"rate\": 0,\n                \"count_rate\": 190,\n                \"offer\": null\n            },\n            {\n                \"id\": 104,\n                \"name\": \"Elegant Embroidered...\",\n                \"is_favorit\": false,\n                \"image\": \"https://pub-839d4c077f8d4907ba3d07717b4ab34c.r2.dev/2/products/487895541458555.webp\",\n                \"price\": 249,\n                \"old_price\": 299,\n                \"is_option\": 0,\n                \"note\": \"page.free_delivery\",\n                \"range_price\": null,\n                \"qty\": 50,\n                \"jewelry\": null,\n                \"rate\": 0,\n                \"count_rate\": 140,\n                \"offer\": null\n            },\n            {\n                \"id\": 2,\n                \"name\": \"Soft Chiffon Dress V...\",\n                \"is_favorit\": false,\n                \"image\": \"https://marketetrolly.s3.eu-north-1.amazonaws.com/media/118/product/2026/04/445115062_1777535187.webp\",\n                \"price\": 240,\n                \"old_price\": null,\n                \"is_option\": 0,\n                \"note\": null,\n                \"range_price\": null,\n                \"qty\": 35,\n                \"jewelry\": null,\n                \"rate\": 0,\n                \"count_rate\": 95,\n                \"offer\": null\n            }\n        ],\n        \"tax\": 0,\n        \"is_limit\": 1,\n        \"reviews\": []\n    }\n}",
+              "code": 200,
+              "cookie": [],
+              "header": [
+                {
+                  "key": "Connection",
+                  "value": "Keep-Alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5, max=100"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.33"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "2531"
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 26 Aug 2026 05:26:27 GMT"
+                },
+                {
+                  "key": "Server",
+                  "value": "LiteSpeed"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=63072000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "alt-svc",
+                  "value": "h3=\":443\"; ma=2592000, h3-29=\":443\"; ma=2592000"
+                },
+                {
+                  "key": "X-turbo-charged-by",
+                  "value": "LiteSpeed"
+                }
+              ],
+              "name": "show",
+              "originalRequest": {
+                "header": [
+                  {
+                    "key": "Accept",
+                    "type": "text",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "url": {
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "elegant-fashion",
+                    "products",
+                    "{{productid}}"
+                  ],
+                  "raw": "{{baseUrl}}/elegant-fashion/products/{{productid}}"
+                }
+              },
+              "status": "OK"
+            }
+          ]
+        },
+        {
+          "name": "Fav",
+          "request": {
+            "auth": {
+              "type": "bearer"
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\r\n    \"product_id\": 1\r\n}"
+            },
+            "header": [],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "store",
+                "{{slug}}",
+                "products",
+                "favorite",
+                "toggle"
+              ],
+              "raw": "{{baseUrl}}/api/v1/store/{{slug}}/products/favorite/toggle"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "product-options/match",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\r\n    \"product_id\": 1,\r\n    \"values\": [13, 3]\r\n}"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "type": "text",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "elegant-fashion",
+                "product-options",
+                "match"
+              ],
+              "raw": "{{baseUrl}}/elegant-fashion/product-options/match"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Product"
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://new.etrolley.net"
+    },
+    {
+      "key": "bearer_token",
+      "value": ""
+    }
+  ]
+}

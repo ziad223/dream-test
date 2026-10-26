@@ -16,8 +16,15 @@ export default function ProductCard({
   isWhiteTheme = false,
   aspectRatioClass = "aspect-[1/1.08]",
 }: ProductCardProps) {
-  const { wishlist, toggleWishlist, addToCart, openQuickView, toggleCompare, compareList } =
-    useProductModal();
+  const {
+    wishlist,
+    toggleWishlist,
+    addToCart,
+    openQuickView,
+    toggleCompare,
+    compareList,
+    formatPrice,
+  } = useProductModal();
 
   const isWishlisted = wishlist.includes(product.id);
   const isCompared = compareList.some((item) => item.id === product.id);
@@ -103,36 +110,40 @@ export default function ProductCard({
       </div>
 
       {/* Product Details (Below Image) */}
-      <div className="pt-3 pb-1 text-left flex flex-col gap-1.5 select-none">
-        <h3 className="text-white text-base sm:text-[17px] font-semibold tracking-normal group-hover:text-[#cca382] transition-colors truncate">
+      <div className="pt-2 sm:pt-3 pb-1 text-left flex flex-col gap-1 sm:gap-1.5 select-none">
+        <h3 className="text-white text-sm sm:text-[16px] lg:text-[17px] font-semibold tracking-normal group-hover:text-[#cca382] transition-colors truncate">
           {product.title}
         </h3>
 
         {/* Stars Rating & Reviews Count */}
-        <div className="flex items-center gap-1 text-[#ffab00]">
+        <div className="flex items-center gap-0.5 sm:gap-1 text-[#ffab00]">
           {[...Array(5)].map((_, i) => (
             <Star
               key={i}
-              className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#ffab00]"
+              className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 text-[#ffab00]"
               strokeWidth={1.5}
             />
           ))}
-          <span className="text-xs sm:text-sm text-[#8e8e8e] ml-1">
+          <span className="text-[11px] sm:text-xs text-[#8e8e8e] ml-0.5 sm:ml-1">
             ({product.reviewsCount})
           </span>
         </div>
 
-        {/* Pricing */}
-        <div className="flex items-center gap-2 sm:gap-2.5 pt-0.5 flex-wrap">
-          <span className="text-white font-bold text-base sm:text-lg lg:text-[19px] tracking-tight">
-            ${product.price.toFixed(2)}
+        {/* Pricing with Dynamic Currency */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 pt-0.5 flex-wrap">
+          <span className="text-white font-bold text-sm sm:text-base lg:text-[19px] tracking-tight">
+            {formatPrice(product.price)}
           </span>
-          <span className="text-[#888888] line-through text-xs sm:text-sm lg:text-[15px]">
-            ${product.originalPrice.toFixed(2)}
-          </span>
-          <span className="text-[#cca382] text-xs sm:text-sm lg:text-[15px] font-medium ml-0.5">
-            {product.discountPercent}% Off
-          </span>
+          {product.originalPrice > product.price && (
+            <span className="text-[#888888] line-through text-[11px] sm:text-xs lg:text-[15px]">
+              {formatPrice(product.originalPrice)}
+            </span>
+          )}
+          {product.discountPercent > 0 && (
+            <span className="text-[#cca382] text-[11px] sm:text-xs lg:text-[15px] font-medium ml-0.5">
+              {product.discountPercent}% Off
+            </span>
+          )}
         </div>
       </div>
     </div>

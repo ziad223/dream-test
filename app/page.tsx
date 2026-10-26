@@ -6,9 +6,12 @@ import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import PromoCards from "@/components/PromoCards";
 import FeaturedProducts from "@/components/FeaturedProducts";
+import MainCategoriesSection from "@/components/MainCategoriesSection";
 import CategoryServiceSection from "@/components/CategoryServiceSection";
 import FullWidthOfferBanner from "@/components/FullWidthOfferBanner";
 import Under200StoreSection from "@/components/Under200StoreSection";
+import ServicesFeatureSection from "@/components/ServicesFeatureSection";
+import BlogSliderSection from "@/components/BlogSliderSection";
 import Footer from "@/components/Footer";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import CustomizeButton from "@/components/CustomizeButton";
@@ -24,20 +27,29 @@ export default function Home() {
 
   // Load saved preference if customer explicitly changed it, otherwise keep Dark Mode
   React.useEffect(() => {
-    try {
-      const savedTheme = localStorage.getItem("multikart_theme_mode");
-      if (savedTheme === "light") {
-        setDarkMode(false);
-      } else if (savedTheme === "dark") {
-        setDarkMode(true);
+    const syncPreferences = () => {
+      try {
+        const savedTheme = localStorage.getItem("multikart_theme_mode");
+        if (savedTheme === "light") {
+          setDarkMode(false);
+        } else if (savedTheme === "dark") {
+          setDarkMode(true);
+        }
+        const savedLang = localStorage.getItem("multikart_lang");
+        const savedRtl = localStorage.getItem("multikart_rtl_mode");
+        if (savedLang === "ar" || savedRtl === "true") {
+          setRtlMode(true);
+        } else if (savedLang === "en" || savedLang === "fr" || savedRtl === "false") {
+          setRtlMode(false);
+        }
+      } catch {
+        // Ignore if localStorage unavailable
       }
-      const savedRtl = localStorage.getItem("multikart_rtl_mode");
-      if (savedRtl === "true") {
-        setRtlMode(true);
-      }
-    } catch {
-      // Ignore if localStorage unavailable
-    }
+    };
+
+    syncPreferences();
+    window.addEventListener("multikart_lang_change", syncPreferences);
+    return () => window.removeEventListener("multikart_lang_change", syncPreferences);
   }, []);
 
   const handleSetDarkMode = (val: boolean) => {
@@ -82,11 +94,20 @@ export default function Home() {
         {/* 6. 6-Column Category Services (icon1.png to icon6.png) */}
         <CategoryServiceSection isWhiteTheme={!darkMode} />
 
+        {/* 6.1 Interactive Main Categories with Live Search, Sorting & Details Modal */}
+        <MainCategoriesSection isWhiteTheme={!darkMode} />
+
         {/* 7. Full-Width 3-Column Offer Banner (banner1.png, center content, banner2.png) */}
         <FullWidthOfferBanner isWhiteTheme={!darkMode} />
 
         {/* 8. UNDER $200 STORE with Left Big Banner & 8 Special Products */}
         <Under200StoreSection isWhiteTheme={!darkMode} />
+
+        {/* 9. FROM THE BLOG - Autoplay Slider Section */}
+        <BlogSliderSection isWhiteTheme={!darkMode} />
+
+        {/* 10. 3-Column Services Features (Free Shipping, 24 X 7 Service, Online Payment) */}
+        <ServicesFeatureSection isWhiteTheme={!darkMode} />
       </main>
 
       {/* 6. Footer Section */}

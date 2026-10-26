@@ -157,6 +157,7 @@ export default function RecentPurchasePopup({ isWhiteTheme = false }: RecentPurc
             src={currentItem.image}
             alt={currentItem.title}
             fill
+            sizes="70px"
             className="object-contain p-1 group-hover:scale-110 transition-transform duration-300"
           />
         </Link>

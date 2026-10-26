@@ -37,10 +37,6 @@ export const metadata: Metadata = {
   creator: "Pixelstrap",
   publisher: "Multikart",
   applicationName: "Multikart E-Commerce",
-  themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#181615" },
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-  ],
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -87,6 +83,13 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+};
+
+export const viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#181615" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+  ],
 };
 
 export default function RootLayout({

@@ -127,6 +127,50 @@ interface Under200StoreSectionProps {
 export default function Under200StoreSection({
   isWhiteTheme = false,
 }: Under200StoreSectionProps) {
+  const [products, setProducts] = React.useState<SpecialProduct[]>(under200Products);
+
+  React.useEffect(() => {
+    let isMounted = true;
+    async function loadProducts() {
+      try {
+        const { etrolleyApi } = await import("@/lib/api");
+        const res: any = await etrolleyApi.getProducts({ per_page: 8 });
+        const items = res?.data?.data || (Array.isArray(res?.data) ? res.data : []);
+        if (isMounted && items && items.length > 0) {
+          const mapped: SpecialProduct[] = items.slice(0, 8).map((item: any, idx: number) => {
+            const price = Number(item.price) || 29;
+            const originalPrice = Number(item.old_price) || (price > 0 ? Number((price * 1.1).toFixed(2)) : 35);
+            const discountPercent =
+              originalPrice > price
+                ? Math.round(((originalPrice - price) / originalPrice) * 100)
+                : 5;
+
+            return {
+              id: item.id || idx + 11,
+              title: item.name || `Special Item ${idx + 1}`,
+              price,
+              originalPrice,
+              discountPercent,
+              rating: item.rate || 0,
+              reviewsCount: item.count_rate || 0,
+              image: item.image || under200Products[idx % under200Products.length].image,
+              category: item.category || "Furniture",
+              stock: item.qty || 10,
+              description: item.sub_description || item.description || "Crafted with elegance...",
+            };
+          });
+          setProducts(mapped);
+        }
+      } catch (err) {
+        console.warn("Using fallback for Under200StoreSection:", err);
+      }
+    }
+    loadProducts();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <section
       className={`py-12 sm:py-16 transition-colors duration-300 ${
@@ -147,9 +191,9 @@ export default function Under200StoreSection({
             <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60 pointer-events-none" />
           </div>
 
-          {/* RIGHT COLUMN: 8 Products (2 rows of 4 columns) using reusable clean ProductCard */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 lg:gap-5">
-            {under200Products.map((product) => (
+          {/* RIGHT COLUMN: 8 Products (2 columns on mobile, 4 columns on tablet/desktop) */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-4 lg:gap-5">
+            {products.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}
