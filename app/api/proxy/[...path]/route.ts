@@ -102,6 +102,16 @@ async function handleProxy(req: NextRequest, pathArray: string[]) {
     candidates.push(`${TARGET_API_URL}/api/v1/store/elegant-fashion/${marketSub}${search}`);
   }
 
+  // 1f. If path is notifications (all, clear-all, delete by id)
+  if (rawPath.includes("notifications")) {
+    const notifSub = rawPath.replace(/^.*notifications/, "notifications");
+    candidates.push(`${TARGET_API_URL}/api/v1/store/${storeSlug}/${notifSub}${search}`);
+    candidates.push(`${TARGET_API_URL}/api/v1/store/elegant-fashion/${notifSub}${search}`);
+    candidates.push(`${TARGET_API_URL}/api/v1/store/elegant2-fashion/${notifSub}${search}`);
+    candidates.push(`${TARGET_API_URL}/${notifSub}${search}`);
+    candidates.push(`${TARGET_API_URL}/api/v1/${notifSub}${search}`);
+  }
+
   // 2. If path is cart or [slug]/cart, add /api/v1/store/[storeSlug]/cart
   if (rawPath.endsWith("/cart") || rawPath === "cart" || rawPath.includes("cart")) {
     candidates.push(`${TARGET_API_URL}/api/v1/store/${storeSlug}/cart${search}`);

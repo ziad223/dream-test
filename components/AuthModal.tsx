@@ -17,6 +17,10 @@ import {
   CheckCircle,
   AlertCircle,
   Loader2,
+  Bell,
+  Trash2,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { etrolleyApi } from "@/lib/api";
 
@@ -32,6 +36,8 @@ export interface UserProfileData {
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialTab?: AuthTab;
+  initialProfileView?: "info" | "orders" | "addresses" | "notifications";
   isWhiteTheme?: boolean;
   onToast: (msg: string, type?: "success" | "error" | "info") => void;
 }
@@ -41,16 +47,19 @@ type AuthTab = "login" | "register" | "forgot" | "verify_otp" | "profile";
 export default function AuthModal({
   isOpen,
   onClose,
+  initialTab,
+  initialProfileView,
   isWhiteTheme = false,
   onToast,
 }: AuthModalProps) {
-  const [currentTab, setCurrentTab] = useState<AuthTab>("login");
+  const [currentTab, setCurrentTab] = useState<AuthTab>(initialTab || "login");
   const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<UserProfileData | null>(null);
 
   // Login form state
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   // Register form state
   const [regName, setRegName] = useState("");
@@ -78,10 +87,16 @@ export default function AuthModal({
   const [profConfirmPassword, setProfConfirmPassword] = useState("");
   const [userOrders, setUserOrders] = useState<any[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
-  const [profileViewMode, setProfileViewMode] = useState<"info" | "orders" | "addresses">("info");
+  const [profileViewMode, setProfileViewMode] = useState<"info" | "orders" | "addresses" | "notifications">("info");
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
   const [loadingOrderDetails, setLoadingOrderDetails] = useState(false);
   const [cancellingOrderId, setCancellingOrderId] = useState<number | string | null>(null);
+
+  // Notifications state
+  const [userNotifications, setUserNotifications] = useState<any[]>([]);
+  const [loadingNotifications, setLoadingNotifications] = useState(false);
+  const [deletingNotificationId, setDeletingNotificationId] = useState<number | string | null>(null);
+  const [clearingNotifications, setClearingNotifications] = useState(false);
 
   // Address state
   const [userAddresses, setUserAddresses] = useState<any[]>([]);
@@ -103,6 +118,17 @@ export default function AuthModal({
   useEffect(() => {
     if (!isOpen) return;
 
+    if (initialProfileView) {
+      setProfileViewMode(initialProfileView);
+      if (initialProfileView === "notifications") {
+        fetchNotifications();
+      } else if (initialProfileView === "orders") {
+        fetchOrders();
+      } else if (initialProfileView === "addresses") {
+        fetchAddresses();
+      }
+    }
+
     try {
       const savedUser = localStorage.getItem("etrolley_user_data");
       if (savedUser) {
@@ -111,7 +137,7 @@ export default function AuthModal({
         setProfName(parsed.name || "");
         setProfEmail(parsed.email || "");
         setProfPhone(parsed.phone || "");
-        setCurrentTab("profile");
+        setCurrentTab(initialTab || "profile");
         return;
       }
     } catch {
@@ -119,8 +145,8 @@ export default function AuthModal({
     }
 
     setCurrentUser(null);
-    setCurrentTab("login");
-  }, [isOpen]);
+    setCurrentTab(initialTab || "login");
+  }, [isOpen, initialTab, initialProfileView]);
 
   // Listen for custom auth change events
   useEffect(() => {
@@ -560,6 +586,52 @@ export default function AuthModal({
     }
   };
 
+  // -------------------------------------------------------------
+  // Notification Management Methods (Postman Collection)
+  // -------------------------------------------------------------
+  const fetchNotifications = async () => {
+    setLoadingNotifications(true);
+    try {
+      const res: any = await etrolleyApi.getNotifications();
+      const list = Array.isArray(res?.data)
+        ? res.data
+        : (res?.data?.data || []);
+      setUserNotifications(list);
+    } catch (err: any) {
+      console.warn("Notifications fetch notice:", err);
+      setUserNotifications([]);
+    } finally {
+      setLoadingNotifications(false);
+    }
+  };
+
+  const handleClearAllNotifications = async () => {
+    if (!confirm("Are you sure you want to clear all notifications?")) return;
+    setClearingNotifications(true);
+    try {
+      await etrolleyApi.clearAllNotifications();
+      setUserNotifications([]);
+      onToast("All notifications deleted successfully.");
+    } catch (err: any) {
+      onToast(err?.message || "Could not clear notifications.", "error");
+    } finally {
+      setClearingNotifications(false);
+    }
+  };
+
+  const handleDeleteNotification = async (id: number | string) => {
+    setDeletingNotificationId(id);
+    try {
+      await etrolleyApi.deleteNotification(id);
+      setUserNotifications((prev) => prev.filter((n) => String(n.id) !== String(id)));
+      onToast("Notification removed.");
+    } catch (err: any) {
+      onToast(err?.message || "Could not delete notification.", "error");
+    } finally {
+      setDeletingNotificationId(null);
+    }
+  };
+
   // ---------------------------------------------------------------------
   // 7. Logout
   // ---------------------------------------------------------------------
@@ -649,7 +721,7 @@ export default function AuthModal({
                   </label>
                   <div className="relative">
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       required
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
@@ -660,7 +732,18 @@ export default function AuthModal({
                           : "bg-[#1c1c1c] border-[#333333] text-white"
                       }`}
                     />
-                    <Lock className="w-4 h-4 text-gray-500 absolute right-3 top-3 pointer-events-none" />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-3 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                      tabIndex={-1}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </button>
                   </div>
                 </div>
 

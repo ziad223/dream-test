@@ -467,4 +467,10 @@ export const etrolleyApi = {
       method: "DELETE",
     });
   },
+
+  deleteNotification: async (id: number | string) => {
+    return apiClient<ApiResponse<any>>(`/notifications/${id}`, {
+      method: "DELETE",
+    });
+  },
 };

@@ -13,6 +13,7 @@ import {
   X,
   Star,
   LogOut,
+  Bell,
 } from "lucide-react";
 
 import { useProductModal } from "./ProductModalContext";
@@ -31,6 +32,8 @@ export default function Header({
     setIsSearchOpen,
     setIsWishlistOpen,
     setIsAuthOpen,
+    setIsNotificationsOpen,
+    openAuthModal,
     cartCount,
     wishlistCount,
     user,
@@ -781,7 +784,7 @@ export default function Header({
 
                   {/* User greeting and name */}
                   <div className="hidden sm:flex flex-col text-left leading-tight">
-                    <span className="text-[10px] text-[#cca382] font-medium tracking-wider">مرحباً</span>
+                    <span className="text-[10px] text-[#cca382] font-medium tracking-wider">Hello,</span>
                     <span className="text-[12px] font-semibold text-white max-w-[110px] truncate group-hover:text-[#cca382] transition-colors">
                       {user.name}
                     </span>
@@ -797,7 +800,7 @@ export default function Header({
                       className="fixed inset-0 z-[80]"
                       onClick={() => setUserDropdownOpen(false)}
                     />
-                    <div className="absolute right-0 top-full mt-2 w-52 bg-[#1c1c1c] border border-[#333333] rounded-[4px] shadow-2xl py-2 z-[90] animate-in fade-in slide-in-from-top-2 duration-200 text-right font-sans">
+                    <div className="absolute right-0 top-full mt-2 w-52 bg-[#1c1c1c] border border-[#333333] rounded-[4px] shadow-2xl py-2 z-[90] animate-in fade-in slide-in-from-top-2 duration-200 text-left font-sans">
                       <div className="px-3.5 py-2 border-b border-[#2a2a2a] mb-1">
                         <div className="text-[13px] font-bold text-white truncate">{user.name}</div>
                         <div className="text-[11px] text-gray-400 truncate">{user.email}</div>
@@ -806,12 +809,23 @@ export default function Header({
                       <button
                         onClick={() => {
                           setUserDropdownOpen(false);
-                          setIsAuthOpen(true);
+                          openAuthModal("profile", "info");
                         }}
-                        className="w-full flex items-center justify-between px-3.5 py-2 text-[13px] text-gray-200 hover:text-white hover:bg-[#282828] transition-colors cursor-pointer"
+                        className="w-full flex items-center space-x-2.5 px-3.5 py-2 text-[13px] text-gray-200 hover:text-white hover:bg-[#282828] transition-colors cursor-pointer"
                       >
                         <User className="w-4 h-4 text-[#cca382]" />
-                        <span>الملف الشخصي والحساب</span>
+                        <span>My Profile & Account</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setUserDropdownOpen(false);
+                          setIsNotificationsOpen(true);
+                        }}
+                        className="w-full flex items-center space-x-2.5 px-3.5 py-2 text-[13px] text-gray-200 hover:text-white hover:bg-[#282828] transition-colors cursor-pointer"
+                      >
+                        <Bell className="w-4 h-4 text-[#cca382]" />
+                        <span>Notifications</span>
                       </button>
 
                       <button
@@ -819,10 +833,10 @@ export default function Header({
                           setUserDropdownOpen(false);
                           logout();
                         }}
-                        className="w-full flex items-center justify-between px-3.5 py-2 text-[13px] text-red-400 hover:text-red-300 hover:bg-[#282828] transition-colors cursor-pointer border-t border-[#2a2a2a] mt-1 pt-2"
+                        className="w-full flex items-center space-x-2.5 px-3.5 py-2 text-[13px] text-red-400 hover:text-red-300 hover:bg-[#282828] transition-colors cursor-pointer border-t border-[#2a2a2a] mt-1 pt-2"
                       >
                         <LogOut className="w-4 h-4 text-red-400" />
-                        <span>تسجيل الخروج</span>
+                        <span>Log Out</span>
                       </button>
                     </div>
                   </>

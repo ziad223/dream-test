@@ -19,6 +19,7 @@ import {
   Trash2,
 } from "lucide-react";
 import AuthModal from "./AuthModal";
+import NotificationsModal from "./NotificationsModal";
 import { etrolleyApi } from "../lib/api";
 
 export interface SpecialProduct {
@@ -71,6 +72,11 @@ interface ProductModalContextType {
   setIsWishlistOpen: (open: boolean) => void;
   isAuthOpen: boolean;
   setIsAuthOpen: (open: boolean) => void;
+  isNotificationsOpen: boolean;
+  setIsNotificationsOpen: (open: boolean) => void;
+  openAuthModal: (tab?: "login" | "register" | "profile", profileView?: "info" | "orders" | "addresses") => void;
+  authInitialTab: "login" | "register" | "profile";
+  authInitialProfileView: "info" | "orders" | "addresses";
   cartCount: number;
   wishlistCount: number;
   user: AuthUserData | null;
@@ -251,12 +257,23 @@ export function ProductModalProvider({
     return () => clearTimeout(timer);
   }, [cartItems, isCartInitialized]);
 
-  // New Navbar Modals state
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [authInitialTab, setAuthInitialTab] = useState<"login" | "register" | "profile">("login");
+  const [authInitialProfileView, setAuthInitialProfileView] = useState<"info" | "orders" | "addresses">("info");
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const openAuthModal = (
+    tab: "login" | "register" | "profile" = "login",
+    profileView: "info" | "orders" | "addresses" = "info"
+  ) => {
+    setAuthInitialTab(tab);
+    setAuthInitialProfileView(profileView);
+    setIsAuthOpen(true);
+  };
 
   // Sync user from localStorage & listen for changes
   useEffect(() => {
@@ -594,6 +611,11 @@ export function ProductModalProvider({
         setIsWishlistOpen,
         isAuthOpen,
         setIsAuthOpen,
+        isNotificationsOpen,
+        setIsNotificationsOpen,
+        openAuthModal,
+        authInitialTab,
+        authInitialProfileView,
         cartCount: cartItems.length,
         wishlistCount: wishlistItemsList.length,
         user,
@@ -1763,8 +1785,20 @@ export function ProductModalProvider({
       <AuthModal
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
+        initialTab={authInitialTab}
+        initialProfileView={authInitialProfileView}
         isWhiteTheme={isWhiteTheme}
         onToast={(msg) => showToast(msg)}
+      />
+
+      {/* ========================================================
+          6b. DEDICATED NOTIFICATIONS MODAL
+          ======================================================== */}
+      <NotificationsModal
+        isOpen={isNotificationsOpen}
+        onClose={() => setIsNotificationsOpen(false)}
+        isWhiteTheme={isWhiteTheme}
+        onToast={(msg, type) => showToast(msg, type)}
       />
 
       {/* ========================================================
